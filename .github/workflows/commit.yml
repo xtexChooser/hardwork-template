@@ -1,0 +1,43 @@
+name: Commit
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron:  '4 0 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    if: github.repository != "xtexChooser/hardwork-template"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Create commits
+        uses: xtexChooser/hardwork-action@main
+        with:
+          name: Test
+          email: test@xtexx.ml
+      
+      - name: Configure
+        run: |
+          if test -f "README_GENERATED.md"; then
+            rm README.md
+            mv README_GENERATED.md README.md
+
+            git config user.name xtex Bot
+            git config user.email bot@xtexx.ml
+          
+            git add .
+            git commit -m "Configure for first use"
+          fi
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          force: true
